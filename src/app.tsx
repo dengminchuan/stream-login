@@ -7,6 +7,7 @@ import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import {RequestConfig} from "@@/plugin-request/request";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -73,14 +74,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     links: isDev
       ? [
-          // <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-          //   <LinkOutlined />
-          //   <span>OpenAPI 文档</span>
-          // </Link>,
-          // <Link to="/~docs" key="docs">
-          //   <BookOutlined />
-          //   <span>业务组件文档</span>
-          // </Link>,
+
+
         ]
       : [],
     menuHeaderRender: undefined,
@@ -114,3 +109,23 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     iconfontUrl: '//at.alicdn.com/t/c/font_3385887_rpgyacv8v7.js',
   };
 };
+export const request: RequestConfig = {
+  // 新增自动添加AccessToken的请求前拦截器
+  requestInterceptors: [authHeaderInterceptor()],
+
+};
+const authHeaderInterceptor = (url: string, options: RequestConfig) => {
+
+  const obj: any = options;
+  if(localStorage.getItem('token')) {
+    const token = localStorage.getItem('token');
+    obj.headers = {
+      ...obj.headers,
+      "token": token||'',
+      'Content-Type': 'application/json'
+    }
+  }
+  return { url, obj };
+};
+
+

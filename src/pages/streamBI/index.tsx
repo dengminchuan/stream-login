@@ -14,6 +14,7 @@ import {Card} from "antd";
 import { Table, Tag, Space } from 'antd';
 
 // @ts-ignore
+// @ts-ignore
 const columns = [
     {
         title: 'Name',

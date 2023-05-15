@@ -1,5 +1,5 @@
 import Footer from '@/components/Footer';
-import { login } from '@/services/ant-design-pro/api';
+
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import {
   AlipayCircleOutlined,
@@ -19,6 +19,7 @@ import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import { FormattedMessage, history, SelectLang, useIntl, useModel } from 'umi';
 import styles from './index.less';
+import {loginUsingPOST} from "@/services/stream-AI/userController";
 
 const LoginMessage: React.FC<{
   content: string;
@@ -34,7 +35,7 @@ const LoginMessage: React.FC<{
 );
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
 
@@ -53,24 +54,31 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      // const msg = await login({ ...values, type });
+      const msg=await loginUsingPOST({...values});
+      if (msg.code === 0) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
         message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
+        // await fetchUserInfo();
         /** 此方法会跳转到 redirect 参数所在的位置 */
         if (!history) return;
         const { query } = history.location;
         const { redirect } = query as { redirect: string };
         history.push(redirect || '/');
         return;
+      }else{
+        const defaultLoginFailedMessage = intl.formatMessage({
+          id: 'pages.login.failure',
+          defaultMessage: '登录失败！',
+        });
+        message.error(defaultLoginFailedMessage);
       }
       console.log(msg);
       // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+      // setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
@@ -92,7 +100,7 @@ const Login: React.FC = () => {
           title="Stream-AI"
           subTitle="Stream-AI是Stream提供的综合AI能力平台"
           initialValues={{
-            autoLogin: true,
+            autoLogin: false,
           }}
           actions={[
             <FormattedMessage
