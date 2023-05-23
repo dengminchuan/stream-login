@@ -6,9 +6,8 @@ import { PageLoading, SettingDrawer } from '@ant-design/pro-components';
 import { RequestInterceptor } from 'umi-request';
 import { history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-import {RequestConfig} from '@@/plugin-request/request';
-import {getCurrentUser} from "@/services/stream-AI/userController";
-
+import { RequestConfig } from '@@/plugin-request/request';
+import { getCurrentUser } from '@/services/stream-AI/userController';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -18,15 +17,14 @@ export const initialStateConfig = {
   loading: <PageLoading />,
 };
 
-
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
+  currentUser?: API.User;
   loading?: boolean;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: () => Promise<API.User | undefined>;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -59,7 +57,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   // @ts-ignore
   // @ts-ignore
   return {
-
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
@@ -73,12 +70,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         history.push(loginPath);
       }
     },
-    links: isDev
-      ? [
-
-
-        ]
-      : [],
+    links: isDev ? [] : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
@@ -113,20 +105,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 };
 const authHeaderInterceptor: RequestInterceptor = (url: string, options: RequestConfig) => {
   const obj: any = options;
-  if(localStorage.getItem('token')) {
+  if (localStorage.getItem('token')) {
     const token = localStorage.getItem('token');
-  obj.headers = {
-    ...obj.headers,
-     "token": token||'',
-    'Content-Type': 'application/json'
-  }
+    obj.headers = {
+      ...obj.headers,
+      token: token || '',
+      'Content-Type': 'application/json',
+    };
   }
   return { url, obj };
 };
 export const request: RequestConfig = {
   // 新增自动添加AccessToken的请求前拦截器
   requestInterceptors: [authHeaderInterceptor],
-
 };
-
-
