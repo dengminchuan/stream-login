@@ -17,9 +17,13 @@ import {
 } from '@ant-design/pro-components';
 import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
-import { FormattedMessage, history, SelectLang, useIntl, useModel } from 'umi';
+import { FormattedMessage, history, SelectLang, useIntl } from 'umi';
 import styles from './index.less';
 import {loginUsingPOST} from "@/services/stream-AI/userController";
+
+import {useModel} from "@@/plugin-model/useModel";
+
+
 
 const LoginMessage: React.FC<{
   content: string;
@@ -37,19 +41,12 @@ const LoginMessage: React.FC<{
 const Login: React.FC = () => {
   const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
+
 
   const intl = useIntl();
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      await setInitialState((s) => ({
-        ...s,
-        currentUser: userInfo,
-      }));
-    }
-  };
+
+
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
@@ -62,17 +59,15 @@ const Login: React.FC = () => {
           defaultMessage: '登录成功！',
         });
         message.success(defaultLoginSuccessMessage);
-        // await fetchUserInfo();
+        //localStorage存token
+        // @ts-ignore
+        localStorage.setItem("token",msg.data);
         /** 此方法会跳转到 redirect 参数所在的位置 */
-        if (!history) return;
-        const { query } = history.location;
-        const { redirect } = query as { redirect: string };
-        history.push(redirect || '/');
+        location.href="/welcome";
         return;
       }else{
         const defaultLoginFailedMessage = intl.formatMessage({
-          id: 'pages.login.failure',
-          defaultMessage: '登录失败！',
+          id: 'pages.login.failure'
         });
         message.error(defaultLoginFailedMessage);
       }
@@ -299,5 +294,4 @@ const Login: React.FC = () => {
     </div>
   );
 };
-
 export default Login;

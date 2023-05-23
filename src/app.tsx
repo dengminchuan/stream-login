@@ -3,11 +3,12 @@ import RightContent from '@/components/RightContent';
 
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import { PageLoading, SettingDrawer } from '@ant-design/pro-components';
-import type { RunTimeLayoutConfig } from 'umi';
+import { RequestInterceptor } from 'umi-request';
 import { history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import {RequestConfig} from "@@/plugin-request/request";
+import {RequestConfig} from '@@/plugin-request/request';
+import {getCurrentUser} from "@/services/stream-AI/userController";
+
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -29,7 +30,7 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser();
+      const msg = await getCurrentUser();
       return msg.data;
     } catch (error) {
       history.push(loginPath);
@@ -94,6 +95,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               enableDarkTheme
               settings={initialState?.settings}
               onSettingChange={(settings) => {
+                // @ts-ignore
                 setInitialState((preInitialState) => ({
                   ...preInitialState,
                   settings,
@@ -109,23 +111,22 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     iconfontUrl: '//at.alicdn.com/t/c/font_3385887_rpgyacv8v7.js',
   };
 };
-export const request: RequestConfig = {
-  // 新增自动添加AccessToken的请求前拦截器
-  requestInterceptors: [authHeaderInterceptor()],
-
-};
-const authHeaderInterceptor = (url: string, options: RequestConfig) => {
-
+const authHeaderInterceptor: RequestInterceptor = (url: string, options: RequestConfig) => {
   const obj: any = options;
   if(localStorage.getItem('token')) {
     const token = localStorage.getItem('token');
-    obj.headers = {
-      ...obj.headers,
-      "token": token||'',
-      'Content-Type': 'application/json'
-    }
+  obj.headers = {
+    ...obj.headers,
+     "token": token||'',
+    'Content-Type': 'application/json'
+  }
   }
   return { url, obj };
+};
+export const request: RequestConfig = {
+  // 新增自动添加AccessToken的请求前拦截器
+  requestInterceptors: [authHeaderInterceptor],
+
 };
 
 
