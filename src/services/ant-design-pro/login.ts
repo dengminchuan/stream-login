@@ -1,6 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
+import BaseResponseString_ = API.BaseResponseString_;
 
 /** 发送验证码 POST /api/login/captcha */
 export async function getFakeCaptcha(
@@ -11,11 +12,12 @@ export async function getFakeCaptcha(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.FakeCaptcha>('/api/user/captcha', {
+  return request<BaseResponseString_>('/api/user/captcha', {
     method: 'GET',
     params: {
       ...params,
     },
     ...(options || {}),
   });
+
 }

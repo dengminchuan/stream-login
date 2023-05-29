@@ -100,7 +100,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     ...initialState?.settings,
     //配置iconfont网址
-    iconfontUrl: '//at.alicdn.com/t/c/font_3385887_rpgyacv8v7.js',
+    iconfontUrl: '//at.alicdn.com/t/c/font_3385887_iftd0hp25d8.js',
   };
 };
 const authHeaderInterceptor: RequestInterceptor = (url: string, options: RequestConfig) => {

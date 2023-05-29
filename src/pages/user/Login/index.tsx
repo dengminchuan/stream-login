@@ -1,6 +1,6 @@
 import Footer from '@/components/Footer';
 
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+
 import {
   AlipayCircleOutlined,
   LockOutlined,
@@ -17,11 +17,11 @@ import {
 } from '@ant-design/pro-components';
 import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
-import { FormattedMessage, history, SelectLang, useIntl } from 'umi';
+import { FormattedMessage,  SelectLang, useIntl } from 'umi';
 import styles from './index.less';
-import {loginUsingPOST} from "@/services/stream-AI/userController";
+import {getCaptcha, loginUsingPOST} from "@/services/stream-AI/userController";
 
-import {useModel} from "@@/plugin-model/useModel";
+
 
 
 
@@ -41,8 +41,6 @@ const LoginMessage: React.FC<{
 const Login: React.FC = () => {
   const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
-
-
   const intl = useIntl();
 
 
@@ -52,12 +50,37 @@ const Login: React.FC = () => {
     try {
       // 登录
       // const msg = await login({ ...values, type });
+      const defaultLoginRepeatSuccessMessage = intl.formatMessage({
+        id: 'pages.login.repeat.success',
+        defaultMessage: '清除成功！',
+      });
+      const defaultLoginRepeatFailedMessage = intl.formatMessage({
+        id: 'pages.login.repeat.fail',
+        defaultMessage: '清除失败！',
+      });
+      if(localStorage.getItem("token")){
+
+
+        const r=confirm("重复登录,是否清除登录用户信息？");
+        if (r==true)
+        {
+          localStorage.removeItem("token");
+          message.success(defaultLoginRepeatSuccessMessage);
+        }
+        else
+        {
+          message.error(defaultLoginRepeatFailedMessage);
+        }
+        return;
+      }
+
       const msg=await loginUsingPOST({...values});
       if (msg.code === 0) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
+
         message.success(defaultLoginSuccessMessage);
         //localStorage存token
         // @ts-ignore
@@ -260,14 +283,14 @@ const Login: React.FC = () => {
                   },
                 ]}
                 onGetCaptcha={async (phone) => {
-                  const result = await getFakeCaptcha({
+                  const result = await getCaptcha({
                     phone,
                   });
                   // @ts-ignore
-                  if (result === false) {
+                  if (result.code != 0) {
                     return;
                   }
-                  message.success('获取验证码成功！验证码为：1234');
+                  message.success('获取验证码成功！验证码为：'+result.data);
                 }}
               />
             </>

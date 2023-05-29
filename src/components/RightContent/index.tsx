@@ -49,7 +49,7 @@ const GlobalHeaderRight: React.FC = () => {
       <span
         className={styles.action}
         onClick={() => {
-          window.open('');
+          window.open('https://github.com/dengminchuan/stream-AI');
         }}
       >
         <QuestionCircleOutlined />

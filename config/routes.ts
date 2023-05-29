@@ -21,13 +21,20 @@ export default [
       },
     ],
   },
-
+  {
+    path: '/admin',
+    name: '用户管理',
+    icon: 'icon-yonghuguanli',
+    access: 'canAdmin',
+    component: './admin/userManage',
+  },
   {
     path: '/welcome',
     name: 'welcome',
     icon: 'smile',
     component: './Welcome',
   },
+
   //streamBI
   {
     path: '/streamBI',
