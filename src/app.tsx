@@ -7,7 +7,7 @@ import { RequestInterceptor } from 'umi-request';
 import { history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import { RequestConfig } from '@@/plugin-request/request';
-import { getCurrentUser } from '@/services/stream-AI/userController';
+import {getCurrentUserUsingGET} from '@/services/stream-AI/userController';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -28,7 +28,7 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await getCurrentUser();
+      const msg = await getCurrentUserUsingGET();
       return msg.data;
     } catch (error) {
       history.push(loginPath);
@@ -111,6 +111,7 @@ const authHeaderInterceptor: RequestInterceptor = (url: string, options: Request
       ...obj.headers,
       token: token || '',
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Headers':'token'
     };
   }
   return { url, obj };

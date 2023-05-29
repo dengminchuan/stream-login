@@ -5,6 +5,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseListUserManage_ = {
+    code?: number;
+    data?: UserManage[];
+    message?: string;
+  };
+
   type BaseResponseString_ = {
     code?: number;
     data?: string;
@@ -15,6 +21,11 @@ declare namespace API {
     code?: number;
     data?: User;
     message?: string;
+  };
+
+  type getCaptchaUsingGETParams = {
+    /** phoneNumber */
+    phoneNumber: string;
   };
 
   type User = {
@@ -32,6 +43,13 @@ declare namespace API {
     password?: string;
     phoneNumber?: string;
     updatedAt?: string;
+    username?: string;
+  };
+
+  type UserManage = {
+    createdAt?: string;
+    id?: number;
+    password?: string;
     username?: string;
   };
 }

@@ -19,7 +19,7 @@ import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import { FormattedMessage,  SelectLang, useIntl } from 'umi';
 import styles from './index.less';
-import {getCaptcha, loginUsingPOST} from "@/services/stream-AI/userController";
+import {getCaptchaUsingGET, loginUsingPOST} from '@/services/stream-AI/userController';
 
 
 
@@ -283,7 +283,7 @@ const Login: React.FC = () => {
                   },
                 ]}
                 onGetCaptcha={async (phone) => {
-                  const result = await getCaptcha({
+                  const result = await getCaptchaUsingGET({
                     phone,
                   });
                   // @ts-ignore

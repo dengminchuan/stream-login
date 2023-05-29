@@ -16,6 +16,9 @@ const Settings: LayoutSettings & {
   pwa: false,
   logo: "/iconfont/streamlogo.svg",
   iconfontUrl: '',
+  "headerHeight": 48,
+  "splitMenus": false
 };
 
 export default Settings;
+
